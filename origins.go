@@ -8,9 +8,10 @@ type Origin struct {
 	Id       string `json:"id,omitempty"`
 	Service  string `json:"service"`
 	Host     string `json:"host"`
-	Port     int    `json:"port,omitempty"`
 	Protocol string `json:"protocol,omitempty"`
 	Path     string `json:"path,omitempty"`
+	Port     int    `json:"port,omitempty"`
+	IsS3     bool   `json:"is_s3,omitempty"`
 }
 
 const originsBasePath = `services/%s/origins/`
@@ -26,11 +27,21 @@ func (client *IORiverClient) ListOrigins(serviceId string) ([]Origin, error) {
 }
 
 func (client *IORiverClient) CreateOrigin(origin Origin) (*Origin, error) {
+	if origin.Protocol == "HTTPS" {
+		origin.Port = 443
+	} else {
+		origin.Port = 80
+	}
 	path := fmt.Sprintf(originsBasePath, origin.Service)
 	return Create[Origin](client, path, origin)
 }
 
 func (client *IORiverClient) UpdateOrigin(origin Origin) (*Origin, error) {
+	if origin.Protocol == "HTTPS" {
+		origin.Port = 443
+	} else {
+		origin.Port = 80
+	}
 	path := fmt.Sprintf("%s%s/", fmt.Sprintf(originsBasePath, origin.Service), origin.Id)
 	return Update[Origin](client, path, origin)
 }

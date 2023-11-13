@@ -14,18 +14,18 @@ const serverOriginData = `{
 	"id":"%s",
 	"service":"%s",
 	"host":"%s",
-	"port":443,
 	"protocol":"HTTPS",
-	"path": "%s"
+	"path": "%s",
+	"is_s3": true
 }`
 
 var expectedOrigin = Origin{
 	Id:       testObjectId,
 	Service:  testServiceId,
 	Host:     testOriginHost,
-	Port:     443,
 	Protocol: "HTTPS",
 	Path:     testOriginPath,
+	IsS3:     true,
 }
 
 func TestListOrigins(t *testing.T) {
@@ -45,9 +45,9 @@ func TestCreateOrigin(t *testing.T) {
 	newOrigin := Origin{
 		Host:     testOriginHost,
 		Service:  testServiceId,
-		Port:     443,
 		Protocol: "HTTPS",
 		Path:     testOriginPath,
+		IsS3:     true,
 	}
 
 	path := fmt.Sprintf("/services/%s/origins/", testServiceId)

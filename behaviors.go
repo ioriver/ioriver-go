@@ -7,21 +7,26 @@ import (
 type ActionType string
 
 const (
-	SET_RESPONSE_HEADER     ActionType = "SET_RESPONSE_HEADER"
-	CACHE_TTL               ActionType = "CACHE_TTL"
-	REDIRECT_HTTP_TO_HTTPS  ActionType = "REDIRECT_HTTP_TO_HTTPS"
-	CACHE_BEHAVIOR          ActionType = "CACHE_BEHAVIOR"
-	BROWSER_CACHE_TTL       ActionType = "BROWSER_CACHE_TTL"
-	REDIRECT                ActionType = "REDIRECT"
-	ORIGIN_CACHE_CONTROL    ActionType = "ORIGIN_CACHE_CONTROL"
-	DISABLE_WAF             ActionType = "DISABLE_WAF"
-	BYPASS_CACHE_ON_COOKIE  ActionType = "BYPASS_CACHE_ON_COOKIE"
-	CACHE_KEY               ActionType = "CACHE_KEY"
-	AUTO_MINIFY             ActionType = "AUTO_MINIFY"
-	HOST_HEADER_OVERRIDE    ActionType = "HOST_HEADER_OVERRIDE"
-	SET_CORS_HEADER         ActionType = "SET_CORS_HEADER"
-	OVERRIDE_ORIGIN         ActionType = "OVERRIDE_ORIGIN"
-	ORIGIN_ERRORS_PASS_THRU ActionType = "ORIGIN_ERRORS_PASS_THRU"
+	SET_RESPONSE_HEADER         ActionType = "SET_RESPONSE_HEADER"
+	CACHE_TTL                   ActionType = "CACHE_TTL"
+	REDIRECT_HTTP_TO_HTTPS      ActionType = "REDIRECT_HTTP_TO_HTTPS"
+	CACHE_BEHAVIOR              ActionType = "CACHE_BEHAVIOR"
+	BROWSER_CACHE_TTL           ActionType = "BROWSER_CACHE_TTL"
+	REDIRECT                    ActionType = "REDIRECT"
+	ORIGIN_CACHE_CONTROL        ActionType = "ORIGIN_CACHE_CONTROL"
+	BYPASS_CACHE_ON_COOKIE      ActionType = "BYPASS_CACHE_ON_COOKIE"
+	CACHE_KEY                   ActionType = "CACHE_KEY"
+	AUTO_MINIFY                 ActionType = "AUTO_MINIFY"
+	HOST_HEADER_OVERRIDE        ActionType = "HOST_HEADER_OVERRIDE"
+	SET_CORS_HEADER             ActionType = "SET_CORS_HEADER"
+	OVERRIDE_ORIGIN             ActionType = "OVERRIDE_ORIGIN"
+	ORIGIN_ERRORS_PASS_THRU     ActionType = "ORIGIN_ERRORS_PASS_THRU"
+	FORWARD_CLIENT_HEADER       ActionType = "FORWARD_CLIENT_HEADER"
+	FOLLOW_REDIRECTS            ActionType = "FOLLOW_REDIRECTS"
+	STATUS_CODE_CACHE           ActionType = "STATUS_CODE_CACHE"
+	STATUS_CODE_BROWSER_CACHE   ActionType = "STATUS_CODE_BROWSER_CACHE"
+	GENERATE_PREFLIGHT_RESPONSE ActionType = "GENERATE_PREFLIGHT_RESPONSE"
+	STALE_TTL                   ActionType = "STALE_TTL"
 )
 
 type BehaviorAction struct {
@@ -42,6 +47,7 @@ type BehaviorAction struct {
 	CacheKey                  string     `json:"cache_key,omitempty"`
 	ClientHeaderName          string     `json:"client_header_name,omitempty"`
 	ActionDisabled            bool       `json:"action_disabled,omitempty"`
+	StatusCode                int        `json:"status_code,omitempty"`
 }
 
 type Behavior struct {
@@ -50,6 +56,7 @@ type Behavior struct {
 	Name        string           `json:"name"`
 	PathPattern string           `json:"path_pattern"`
 	Actions     []BehaviorAction `json:"behavior_actions"`
+	IsDefault   bool             `json:"is_default,omitempty"`
 }
 
 const behaviorsBasePath = `services/%s/behaviors/`
@@ -77,4 +84,10 @@ func (client *IORiverClient) UpdateBehavior(behavior Behavior) (*Behavior, error
 func (client *IORiverClient) DeleteBehavior(serviceId string, behaviorId string) error {
 	path := fmt.Sprintf("%s%s/", fmt.Sprintf(behaviorsBasePath, serviceId), behaviorId)
 	return Delete(client, path)
+}
+
+func (client *IORiverClient) ResetDefaultBehavior(serviceId string) error {
+	path := fmt.Sprintf("%s%s/", fmt.Sprintf(behaviorsBasePath, serviceId), "reset_default_behavior")
+	_, err := Update(client, path, Behavior{})
+	return err
 }
