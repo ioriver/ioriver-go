@@ -5,13 +5,14 @@ import (
 )
 
 type Origin struct {
-	Id       string `json:"id,omitempty"`
-	Service  string `json:"service"`
-	Host     string `json:"host"`
-	Protocol string `json:"protocol,omitempty"`
-	Path     string `json:"path,omitempty"`
-	Port     int    `json:"port,omitempty"`
-	IsS3     bool   `json:"is_s3,omitempty"`
+	Id        string `json:"id,omitempty"`
+	Service   string `json:"service"`
+	Host      string `json:"host"`
+	Protocol  string `json:"protocol,omitempty"`
+	Path      string `json:"path,omitempty"`
+	Port      int    `json:"port,omitempty"`
+	IsS3      bool   `json:"is_s3,omitempty"`
+	TimeoutMs int    `json:"timeout_ms,omitempty"`
 }
 
 const originsBasePath = `services/%s/origins/`

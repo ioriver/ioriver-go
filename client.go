@@ -253,7 +253,7 @@ func Get[T interface{}](client *IORiverClient, path string) (*T, error) {
 	var result T
 	err = json.Unmarshal(respBody, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Unmarshaling json failed: %w", err)
+		return nil, fmt.Errorf("Error unmarshaling json: %w", err)
 	}
 	return &result, nil
 }
