@@ -16,16 +16,18 @@ const serverOriginData = `{
 	"host":"%s",
 	"protocol":"HTTPS",
 	"path": "%s",
-	"is_s3": true
+	"is_s3": true,
+	"timeout_ms": 5000
 }`
 
 var expectedOrigin = Origin{
-	Id:       testObjectId,
-	Service:  testServiceId,
-	Host:     testOriginHost,
-	Protocol: "HTTPS",
-	Path:     testOriginPath,
-	IsS3:     true,
+	Id:        testObjectId,
+	Service:   testServiceId,
+	Host:      testOriginHost,
+	Protocol:  "HTTPS",
+	Path:      testOriginPath,
+	IsS3:      true,
+	TimeoutMs: 5000,
 }
 
 func TestListOrigins(t *testing.T) {
