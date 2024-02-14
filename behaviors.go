@@ -27,6 +27,10 @@ const (
 	STATUS_CODE_BROWSER_CACHE   ActionType = "STATUS_CODE_BROWSER_CACHE"
 	GENERATE_PREFLIGHT_RESPONSE ActionType = "GENERATE_PREFLIGHT_RESPONSE"
 	STALE_TTL                   ActionType = "STALE_TTL"
+	STREAM_LOGS                 ActionType = "STREAM_LOGS"
+	ALLOWED_METHODS             ActionType = "ALLOWED_METHODS"
+	COMPRESSION                 ActionType = "COMPRESSION"
+	GENERATE_RESPONSE           ActionType = "GENERATE_RESPONSE"
 )
 
 type BehaviorAction struct {
@@ -48,6 +52,10 @@ type BehaviorAction struct {
 	ClientHeaderName          string     `json:"client_header_name,omitempty"`
 	ActionDisabled            bool       `json:"action_disabled,omitempty"`
 	StatusCode                int        `json:"status_code,omitempty"`
+	UnifiedLogDestination     string     `json:"unified_log_destination,omitempty"`
+	UnifiedLogSamplingRate    int        `json:"unified_log_sampling_rate,omitempty"`
+	AllowedMethods            string     `json:"allowed_methods,omitempty"`
+	ResponsePagePath          string     `json:"response_page_path,omitempty"`
 }
 
 type Behavior struct {

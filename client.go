@@ -68,7 +68,12 @@ func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 			errDetails = string(respBody)
 		}
 
-		respErr := fmt.Errorf("Request failed: %s, details: %s", resp.Status, errDetails)
+		requestId := resp.Header.Get("x-request-id")
+		if requestId == "" {
+			requestId = "unknown"
+		}
+
+		respErr := fmt.Errorf("Request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
 		return nil, respErr
 	}
 
@@ -93,7 +98,7 @@ func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 	return nil, nil
 }
 
-func (client *IORiverClient) waitForBackgrounTask(id int) error {
+func (client *IORiverClient) waitForBackgrounTask(id int, requestId string) error {
 
 	TIMEOUT := 300
 	elassped := 0
@@ -117,7 +122,7 @@ func (client *IORiverClient) waitForBackgrounTask(id int) error {
 	}
 
 	if task != nil && task.Status == "Status.ERROR" {
-		err = fmt.Errorf("Request failed: %s, details: %s", task.Message, task.Details)
+		err = fmt.Errorf("Request failed: %s, request-id: %s, details: %s", task.Message, requestId, task.Details)
 	}
 
 	return err
@@ -161,6 +166,11 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 		return resp, err
 	}
 
+	requestId := resp.Header.Get("x-request-id")
+	if requestId == "" {
+		requestId = "unknown"
+	}
+
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		respBody, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
@@ -169,7 +179,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 			errDetails = string(respBody)
 		}
 
-		respErr := fmt.Errorf("Request failed: %s, details: %s", resp.Status, errDetails)
+		respErr := fmt.Errorf("Request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
 		return nil, respErr
 	}
 
@@ -177,7 +187,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 	if backgroundTask != "" {
 		id, err := strconv.Atoi(backgroundTask)
 		if err == nil {
-			err = client.waitForBackgrounTask(id)
+			err = client.waitForBackgrounTask(id, requestId)
 			if err != nil {
 				return nil, err
 			}

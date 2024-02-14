@@ -32,6 +32,11 @@ type CloudfrontCredentials struct {
 	AccessSecret string `json:"accessSecret"`
 }
 
+type CloudfrontAssumeRoleCredentials struct {
+	RoleArn    string `json:"assume_role_arn"`
+	ExternalId string `json:"external_id"`
+}
+
 type AzureCdnCredentials struct {
 	SubscriptionId    string `json:"subscriptionId"`
 	ClientId          string `json:"clientId"`
