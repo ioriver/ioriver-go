@@ -32,7 +32,10 @@ const serverBehaviorData = `{
 			"pattern":null,
 			"cookie":null,
 			"auto_minify":null,
-			"host_header":null
+			"host_header":null,
+			"status_code":null,
+			"unified_log_destination":null,
+			"unified_log_sampling_rate":null
 		}
 	]
 }
