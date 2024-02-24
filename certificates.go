@@ -21,17 +21,25 @@ const (
 	PENDING CertificateStatus = "PENDING"
 )
 
+type ProviderCertificate struct {
+	AccountProvider       string `json:"provider"`
+	ProviderCertificateId string `json:"provider_certificate_id"`
+	NotValidAfter         string `json:"not_valid_after,omitempty"`
+	ProviderName          string `json:"provider_name,omitempty"`
+}
+
 type Certificate struct {
-	Id               string            `json:"id,omitempty"`
-	Name             string            `json:"name"`
-	Type             CertificateType   `json:"type"`
-	Cn               string            `json:"cn,omitempty"`
-	NotValidAfter    string            `json:"not_valid_after,omitempty"`
-	Certificate      string            `json:"certificate,omitempty"`
-	PrivateKey       string            `json:"private_key,omitempty"`
-	CertificateChain string            `json:"certificate_chain,omitempty"`
-	Challenges       string            `json:"challenges,omitempty"`
-	Status           CertificateStatus `json:"status,omitempty"`
+	Id                    string                `json:"id,omitempty"`
+	Name                  string                `json:"name"`
+	Type                  CertificateType       `json:"type"`
+	Cn                    string                `json:"cn,omitempty"`
+	NotValidAfter         string                `json:"not_valid_after,omitempty"`
+	Certificate           string                `json:"certificate,omitempty"`
+	PrivateKey            string                `json:"private_key,omitempty"`
+	CertificateChain      string                `json:"certificate_chain,omitempty"`
+	Challenges            string                `json:"challenges,omitempty"`
+	Status                CertificateStatus     `json:"status,omitempty"`
+	ProvidersCertificates []ProviderCertificate `json:"providers_certificates,omitempty"`
 }
 
 const certBasePath = "certificates/"

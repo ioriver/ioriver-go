@@ -31,6 +31,7 @@ const (
 	ALLOWED_METHODS             ActionType = "ALLOWED_METHODS"
 	COMPRESSION                 ActionType = "COMPRESSION"
 	GENERATE_RESPONSE           ActionType = "GENERATE_RESPONSE"
+	CACHED_METHODS              ActionType = "CACHED_METHODS"
 )
 
 type BehaviorAction struct {
@@ -56,6 +57,7 @@ type BehaviorAction struct {
 	UnifiedLogSamplingRate    int        `json:"unified_log_sampling_rate,omitempty"`
 	AllowedMethods            string     `json:"allowed_methods,omitempty"`
 	ResponsePagePath          string     `json:"response_page_path,omitempty"`
+	CachedMethods             string     `json:"cached_methods,omitempty"`
 }
 
 type Behavior struct {
