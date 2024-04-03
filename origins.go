@@ -4,15 +4,27 @@ import (
 	"fmt"
 )
 
+type OriginShieldProvider struct {
+	ServiceProvider  string `json:"service_provider"`
+	ProviderLocation string `json:"provider_location,omitempty"`
+}
+
+type OriginShieldLocation struct {
+	Country     string `json:"country"`
+	Subdivision string `json:"subdivision,omitempty"`
+}
+
 type Origin struct {
-	Id        string `json:"id,omitempty"`
-	Service   string `json:"service"`
-	Host      string `json:"host"`
-	Protocol  string `json:"protocol,omitempty"`
-	Path      string `json:"path,omitempty"`
-	Port      int    `json:"port,omitempty"`
-	IsS3      bool   `json:"is_s3,omitempty"`
-	TimeoutMs int    `json:"timeout_ms,omitempty"`
+	Id              string                 `json:"id,omitempty"`
+	Service         string                 `json:"service"`
+	Host            string                 `json:"host"`
+	Protocol        string                 `json:"protocol,omitempty"`
+	Path            string                 `json:"path,omitempty"`
+	Port            int                    `json:"port,omitempty"`
+	IsS3            bool                   `json:"is_s3,omitempty"`
+	TimeoutMs       int                    `json:"timeout_ms,omitempty"`
+	ShieldLocation  *OriginShieldLocation  `json:"shield_location,omitempty"`
+	ShieldProviders []OriginShieldProvider `json:"shield_providers,omitempty"`
 }
 
 const originsBasePath = `services/%s/origins/`
