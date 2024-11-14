@@ -11,10 +11,11 @@ import (
 )
 
 type IORiverClient struct {
-	Token       string
-	UserAgent   string
-	EndpointUrl string
-	Timeout     int
+	Token            string
+	UserAgent        string
+	EndpointUrl      string
+	TerraformVersion string
+	Timeout          int
 }
 
 type CallParams struct {
@@ -55,6 +56,10 @@ func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 		req.Header.Set("Authorization", "token "+client.Token)
 	}
 
+	if client.TerraformVersion != "" {
+		req.Header.Set("X-Terraform-Version", client.TerraformVersion)
+	}
+
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -73,20 +78,20 @@ func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 			requestId = "unknown"
 		}
 
-		respErr := fmt.Errorf("Request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
+		respErr := fmt.Errorf("request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
 		return nil, respErr
 	}
 
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response: %w", err)
+		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
 	var tasks []AsyncTask
 	err = json.Unmarshal(respBody, &tasks)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshaling async-tasks json: %w", err)
+		return nil, fmt.Errorf("error unmarshaling async-tasks json: %w", err)
 	}
 
 	for _, task := range tasks {
@@ -122,7 +127,7 @@ func (client *IORiverClient) waitForBackgrounTask(id int, requestId string) erro
 	}
 
 	if task != nil && task.Status == "Status.ERROR" {
-		err = fmt.Errorf("Request failed: %s, request-id: %s, details: %s", task.Message, requestId, task.Details)
+		err = fmt.Errorf("request failed: %s, request-id: %s, details: %s", task.Message, requestId, task.Details)
 	}
 
 	return err
@@ -157,6 +162,10 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 		req.Header.Set("Authorization", "token "+client.Token)
 	}
 
+	if client.TerraformVersion != "" {
+		req.Header.Set("X-Terraform-Version", client.TerraformVersion)
+	}
+
 	if reqBody != nil {
 		req.Header.Set("content-type", "application/json")
 	}
@@ -179,7 +188,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 			errDetails = string(respBody)
 		}
 
-		respErr := fmt.Errorf("Request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
+		respErr := fmt.Errorf("request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
 		return nil, respErr
 	}
 
@@ -206,13 +215,13 @@ func Create[T interface{}, NewT interface{}](client *IORiverClient, path string,
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response: %w", err)
+		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
 	var result T
 	err = json.Unmarshal(respBody, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshaling json: %w", err)
+		return nil, fmt.Errorf("error unmarshaling json: %w", err)
 	}
 	return &result, nil
 }
@@ -226,13 +235,13 @@ func Update[T interface{}](client *IORiverClient, path string, obj T) (*T, error
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response: %w", err)
+		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
 	var result T
 	err = json.Unmarshal(respBody, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshaling json: %w", err)
+		return nil, fmt.Errorf("error unmarshaling json: %w", err)
 	}
 	return &result, nil
 }
@@ -257,13 +266,13 @@ func Get[T interface{}](client *IORiverClient, path string) (*T, error) {
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response: %w", err)
+		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
 	var result T
 	err = json.Unmarshal(respBody, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshaling json: %w", err)
+		return nil, fmt.Errorf("error unmarshaling json: %w", err)
 	}
 	return &result, nil
 }
@@ -278,13 +287,13 @@ func List[T interface{}](client *IORiverClient, path string) ([]T, error) {
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response: %w", err)
+		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
 	var result []T
 	err = json.Unmarshal(respBody, &result)
 	if err != nil {
-		return []T{}, fmt.Errorf("Error unmarshaling json: %w", err)
+		return []T{}, fmt.Errorf("error unmarshaling json: %w", err)
 	}
 	return result, nil
 }

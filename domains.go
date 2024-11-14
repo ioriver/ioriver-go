@@ -9,8 +9,8 @@ type Domain struct {
 	Service      string `json:"service"`
 	Domain       string `json:"domain"`
 	PathPattern  string `json:"path_pattern,omitempty"`
-	Origin       string `json:"origin"`
-	LoadBalancer string `json:"load_balancer"`
+	Origin       string `json:"origin,omitempty"`
+	LoadBalancer string `json:"load_balancer,omitempty"`
 }
 
 const domainsBasePath = `services/%s/domains/`
