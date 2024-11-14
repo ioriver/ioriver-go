@@ -48,7 +48,7 @@ type BehaviorAction struct {
 	AutoMinify                string     `json:"auto_minify,omitempty"`
 	HostHeader                string     `json:"host_header,omitempty"`
 	Origin                    string     `json:"origin,omitempty"`
-	Enabled                   bool       `json:"enabled,omitempty"`
+	Enabled                   *bool      `json:"enabled,omitempty"`
 	CacheKey                  string     `json:"cache_key,omitempty"`
 	ClientHeaderName          string     `json:"client_header_name,omitempty"`
 	ActionDisabled            bool       `json:"action_disabled,omitempty"`
