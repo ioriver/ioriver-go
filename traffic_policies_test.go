@@ -35,6 +35,8 @@ const serverTrafficPolicyData = `{
     "performance_checks":[]
 }`
 
+var weight = 100
+
 var expectedTrafficPolicy = TrafficPolicy{
 	Id:        testTrafficPolicyId,
 	Service:   testServiceId,
@@ -44,7 +46,7 @@ var expectedTrafficPolicy = TrafficPolicy{
 	Providers: []TrafficPolicyProvider{
 		{
 			ServiceProvider: testTrafficPolicyServiceProviderId,
-			Weight:          100,
+			Weight:          &weight,
 		},
 	},
 	Geos: []TrafficPolicyGeo{
@@ -80,7 +82,7 @@ func TestCreateTrafficPolicy(t *testing.T) {
 		Providers: []TrafficPolicyProvider{
 			{
 				ServiceProvider: testTrafficPolicyServiceProviderId,
-				Weight:          100,
+				Weight:          &weight,
 			},
 		},
 		Geos: []TrafficPolicyGeo{

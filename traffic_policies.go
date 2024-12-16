@@ -4,9 +4,19 @@ import (
 	"fmt"
 )
 
+type TrafficPolicyType string
+
+const (
+	TRAFFIC_POLICY_STATIC     TrafficPolicyType = "Static"
+	TRAFFIC_POLICY_DYNAMIC    TrafficPolicyType = "Dynamic"
+	TRAFFIC_POLICY_COST_BASED TrafficPolicyType = "Cost based"
+)
+
 type TrafficPolicyProvider struct {
-	ServiceProvider string `json:"service_provider"`
-	Weight          int    `json:"weight"`
+	ServiceProvider      string `json:"service_provider"`
+	Weight               *int   `json:"weight,omitempty"`
+	Priority             *int   `json:"priority,omitempty"`
+	IsCommitmentPriority *bool  `json:"is_commitment_priority,omitempty"`
 }
 
 type TrafficPolicyGeo struct {
@@ -24,15 +34,17 @@ type TrafficPolicyPerfCheck struct {
 }
 
 type TrafficPolicy struct {
-	Id           string                     `json:"id,omitempty"`
-	Service      string                     `json:"service"`
-	Type         string                     `json:"type"`
-	Failover     bool                       `json:"failover"`
-	IsDefault    bool                       `json:"is_default"`
-	Providers    []TrafficPolicyProvider    `json:"providers"`
-	Geos         []TrafficPolicyGeo         `json:"geos"`
-	HealthChecks []TrafficPolicyHealthCheck `json:"health_checks"`
-	PerfChecks   []TrafficPolicyPerfCheck   `json:"performance_checks"`
+	Id                       string                     `json:"id,omitempty"`
+	Service                  string                     `json:"service"`
+	Type                     TrafficPolicyType          `json:"type"`
+	Failover                 bool                       `json:"failover"`
+	IsDefault                bool                       `json:"is_default"`
+	Providers                []TrafficPolicyProvider    `json:"providers"`
+	Geos                     []TrafficPolicyGeo         `json:"geos"`
+	HealthChecks             []TrafficPolicyHealthCheck `json:"health_checks"`
+	PerfChecks               []TrafficPolicyPerfCheck   `json:"performance_checks"`
+	EnablePerformancePenalty *bool                      `json:"enable_performance_penalty,omitempty"`
+	PerformancePenalty       *int                       `json:"performance_penalty,omitempty"`
 }
 
 const trafficPolicyBasePath = `services/%s/traffic-policies/`
