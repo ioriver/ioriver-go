@@ -23,6 +23,11 @@ type Origin struct {
 	HttpPort        int                    `json:"http_port,omitempty"`
 	HttpsPort       int                    `json:"port,omitempty"`
 	IsS3            bool                   `json:"is_s3,omitempty"`
+	IsPrivateS3     bool                   `json:"is_private_s3,omitempty"`
+	S3BucketName    string                 `json:"s3_bucket_name,omitempty"`
+	S3AwsRegion     string                 `json:"s3_aws_region,omitempty"`
+	S3AwsKey        string                 `json:"s3_aws_key,omitempty"`
+	S3AwsSecret     string                 `json:"s3_aws_secret,omitempty"`
 	TimeoutMs       int                    `json:"timeout_ms,omitempty"`
 	VerifyTLS       bool                   `json:"verify_tls,omitempty"`
 	ShieldLocation  *OriginShieldLocation  `json:"shield_location,omitempty"`
