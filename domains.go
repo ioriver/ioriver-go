@@ -4,13 +4,18 @@ import (
 	"fmt"
 )
 
+type DomainMappings struct {
+	PathPattern string `json:"path_pattern,omitempty"`
+	TargetId    string `json:"target_id"`
+	TargetType  string `json:"target_type"`
+}
+
 type Domain struct {
-	Id           string `json:"id,omitempty"`
-	Service      string `json:"service"`
-	Domain       string `json:"domain"`
-	PathPattern  string `json:"path_pattern,omitempty"`
-	Origin       string `json:"origin,omitempty"`
-	LoadBalancer string `json:"load_balancer,omitempty"`
+	Id       string           `json:"id,omitempty"`
+	Service  string           `json:"service"`
+	Domain   string           `json:"domain"`
+	Aliases  []string         `json:"aliases"`
+	Mappings []DomainMappings `json:"mappings"`
 }
 
 const domainsBasePath = `services/%s/domains/`
