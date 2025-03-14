@@ -21,7 +21,7 @@ type Origin struct {
 	Protocol        string                 `json:"protocol,omitempty"`
 	Path            string                 `json:"path,omitempty"`
 	HttpPort        int                    `json:"http_port,omitempty"`
-	HttpsPort       int                    `json:"port,omitempty"`
+	HttpsPort       int                    `json:"https_port,omitempty"`
 	IsS3            bool                   `json:"is_s3,omitempty"`
 	IsPrivateS3     bool                   `json:"is_private_s3,omitempty"`
 	S3BucketName    string                 `json:"s3_bucket_name,omitempty"`

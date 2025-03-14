@@ -13,18 +13,26 @@ const serverDomainData = `{
 	"id":"%s",
 	"service":"%s",
 	"domain":"%s",
-	"path_pattern":"%s",
-	"origin":"%s",
-	"load_balancer": ""
+	"mappings": [
+		{
+			"path_pattern":"%s",
+			"target_id":"%s",
+			"target_type":"origin"
+    }
+	]
 }`
 
 var expectedDomain = Domain{
-	Id:           testDomainId,
-	Service:      testServiceId,
-	Domain:       testDomainName,
-	PathPattern:  testPathPattern,
-	Origin:       testObjectId,
-	LoadBalancer: "",
+	Id:      testDomainId,
+	Service: testServiceId,
+	Domain:  testDomainName,
+	Mappings: []DomainMappings{
+		{
+			PathPattern: testPathPattern,
+			TargetId:    testObjectId,
+			TargetType:  "origin",
+		},
+	},
 }
 
 func TestListDomains(t *testing.T) {
@@ -44,10 +52,15 @@ func TestGetDomain(t *testing.T) {
 
 func TestCreateDomain(t *testing.T) {
 	newDomain := Domain{
-		Domain:      testDomainName,
-		Service:     testServiceId,
-		Origin:      testObjectId,
-		PathPattern: testPathPattern,
+		Domain:  testDomainName,
+		Service: testServiceId,
+		Mappings: []DomainMappings{
+			{
+				PathPattern: testPathPattern,
+				TargetId:    testObjectId,
+				TargetType:  "origin",
+			},
+		},
 	}
 
 	path := fmt.Sprintf("/services/%s/domains/", testServiceId)
