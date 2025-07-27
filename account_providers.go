@@ -5,12 +5,14 @@ import (
 )
 
 const (
-	Cloudflare int = 2
-	Cloudfront int = 3
-	AzureCDN   int = 4
-	Akamai     int = 5
-	Fastly     int = 13
-	Edgio      int = 15
+	Cloudflare  int = 2
+	Cloudfront  int = 3
+	AzureCDN    int = 4
+	Akamai      int = 5
+	Fastly      int = 13
+	Edgio       int = 15
+	GCPCloudCDN int = 17
+	GCPMediaCDN int = 18
 )
 
 type ProviderDetails struct {
@@ -23,10 +25,12 @@ type AccountProvider struct {
 	Provider    int             `json:"provider"`
 	Credentials interface{}     `json:"credentials,omitempty"`
 	Details     ProviderDetails `json:"provider_details,omitempty"`
+	DisplayName string          `json:"display_name,omitempty"`
 }
 
 type FastlyCredentials string
 type CloudflareCredentials string
+type GcpCredentials string
 
 type CloudfrontCredentials struct {
 	AccessKey    string `json:"accessKey"`
@@ -48,8 +52,15 @@ type AzureCdnCredentials struct {
 
 type EdgioCredentials struct {
 	ClientId       string `json:"client_id"`
-	CliendSecret   string `json:"client_secret"`
+	ClientSecret   string `json:"client_secret"`
 	OrganizationId string `json:"organization_id"`
+}
+
+type AkamaiCredentials struct {
+	ClientToken  string `json:"client_token"`
+	ClientSecret string `json:"client_secret"`
+	AccessSecret string `json:"access_secret"`
+	BaseUrl      string `json:"base_url"`
 }
 
 const acBasePath = "account-providers/"
