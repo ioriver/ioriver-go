@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -24,12 +25,13 @@ type CallParams struct {
 }
 
 func NewClient(token string) *IORiverClient {
-	return &IORiverClient{
+	c := &IORiverClient{
 		Token:       token,
 		UserAgent:   userAgent,
 		EndpointUrl: fmt.Sprintf("%s://%s%s", defaultScheme, defaultHostname, defaultBasePath),
 		Timeout:     180,
 	}
+	return c
 }
 
 type AsyncTask struct {
@@ -44,7 +46,7 @@ type AsyncTask struct {
 
 func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 
-	url := client.EndpointUrl + "async_tasks/"
+	url := client.EndpointUrl + "v1/async_tasks/"
 	httpClient := http.DefaultClient
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -135,7 +137,8 @@ func (client *IORiverClient) waitForBackgrounTask(id int, requestId string) erro
 
 func (client *IORiverClient) CallApi(path string, method string, params CallParams) (*http.Response, error) {
 
-	url := client.EndpointUrl + path
+	version := getVersion(path)
+	url := fmt.Sprintf("%s%s/%s", client.EndpointUrl, version, path)
 	httpClient := http.DefaultClient
 
 	var reqBody io.Reader = nil
@@ -256,9 +259,10 @@ func DeleteWithQueryString(client *IORiverClient, path string, query string) err
 	return err
 }
 
-func Get[T interface{}](client *IORiverClient, path string) (*T, error) {
+func Get[T interface{}](client *IORiverClient, path string, queryParams ...string) (*T, error) {
 
-	resp, err := client.CallApi(path, "GET", CallParams{payload: nil})
+	callParams := CallParams{payload: nil, query: strings.Join(queryParams, "&")}
+	resp, err := client.CallApi(path, "GET", callParams)
 	if err != nil {
 		return nil, err
 	}
@@ -296,4 +300,11 @@ func List[T interface{}](client *IORiverClient, path string) ([]T, error) {
 		return []T{}, fmt.Errorf("error unmarshaling json: %w", err)
 	}
 	return result, nil
+}
+
+func getVersion(path string) string {
+	if strings.HasPrefix(path, trafficBasePath) {
+		return "v2"
+	}
+	return "v1"
 }

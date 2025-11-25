@@ -54,6 +54,7 @@ func RunList[T interface{}](t *testing.T, lister func(client *IORiverClient) ([]
 		fmt.Fprintf(w, `%s`, serverData)
 	}
 
+	path = fmt.Sprintf("/%s%s", getVersion(path), path)
 	mux.HandleFunc(path, handler)
 
 	actual, err := lister(client)
@@ -74,6 +75,7 @@ func RunServiceList[T interface{}](t *testing.T, lister func(client *IORiverClie
 		fmt.Fprintf(w, `%s`, serverData)
 	}
 
+	path = fmt.Sprintf("/%s%s", getVersion(path), path)
 	mux.HandleFunc(path, handler)
 
 	actual, err := lister(client, serviceId)
@@ -93,6 +95,7 @@ func RunGet[T interface{}](t *testing.T, getter func(client *IORiverClient, id s
 		fmt.Fprintf(w, `%s`, serverData)
 	}
 
+	path = fmt.Sprintf("/%s%s", getVersion(path), path)
 	mux.HandleFunc(path, handler)
 
 	actual, err := getter(client, id)
@@ -112,6 +115,7 @@ func RunServiceGet[T interface{}](t *testing.T, getter func(client *IORiverClien
 		fmt.Fprintf(w, `%s`, serverData)
 	}
 
+	path = fmt.Sprintf("/%s%s", getVersion(path), path)
 	mux.HandleFunc(path, handler)
 
 	actual, err := getter(client, serviceId, id)
@@ -131,6 +135,7 @@ func RunCreate[T interface{}](t *testing.T, creator func(client *IORiverClient, 
 		fmt.Fprintf(w, `%s`, serverData)
 	}
 
+	path = fmt.Sprintf("/%s%s", getVersion(path), path)
 	mux.HandleFunc(path, handler)
 
 	actual, err := creator(client, newObj)
