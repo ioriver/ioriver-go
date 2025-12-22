@@ -34,7 +34,7 @@ func TestGetFilteredMetrics(t *testing.T) {
 	metrics := traffic.GetFilteredMetrics(testServiceId, func(metric *Metric, metricTimestamp int64) bool {
 		return metric.ProviderName == providerName
 	})
-	if len(metrics) != 1 && metrics[0].Bytes != bytes {
+	if len(metrics) != 1 && metrics[0].Metrics.Bytes != bytes {
 		t.Error("expected metric is not found")
 	}
 }
