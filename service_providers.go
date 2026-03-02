@@ -6,18 +6,19 @@ import (
 )
 
 type ServiceProvider struct {
-	Id              string `json:"id,omitempty"`
-	AccountProvider string `json:"account_provider,omitempty"`
-	Service         string `json:"service"`
-	Weight          int    `json:"weight"`
-	IsUnmanaged     bool   `json:"is_unmanaged,omitempty"`
-	CName           string `json:"cname,omitempty"`
-	DisplayName     string `json:"display_name,omitempty"`
-	IsFailed        bool   `json:"is_failed,omitempty"`
-	Status          string `json:"status,omitempty"`
-	StatusDetails   string `json:"status_details,omitempty"`
-	Restored        bool   `json:"restored,omitempty"`
-	Name            string `json:"name,omitempty"`
+	Id                 string `json:"id,omitempty"`
+	AccountProvider    string `json:"account_provider,omitempty"`
+	Service            string `json:"service"`
+	Weight             int    `json:"weight"`
+	IsUnmanaged        bool   `json:"is_unmanaged,omitempty"`
+	CName              string `json:"cname,omitempty"`
+	DisplayName        string `json:"display_name,omitempty"`
+	ProviderCustomData string `json:"custom_data,omitempty"`
+	IsFailed           bool   `json:"is_failed,omitempty"`
+	Status             string `json:"status,omitempty"`
+	StatusDetails      string `json:"status_details,omitempty"`
+	Restored           bool   `json:"restored,omitempty"`
+	Name               string `json:"name,omitempty"`
 }
 
 const spBasePath = `services/%s/providers/`
