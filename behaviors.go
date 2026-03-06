@@ -42,6 +42,7 @@ const (
 	URL_REWRITE                 ActionType = "URL_REWRITE"
 	URL_SIGNING                 ActionType = "URL_SIGNING"
 	VIEWER_PROTOCOL             ActionType = "VIEWER_PROTOCOL"
+	ALLOW_ACCESS_ONLY_FROM_IP   ActionType = "ALLOW_ACCESS_ONLY_FROM_IP"
 )
 
 type DateTimeWindowModel struct {
@@ -66,36 +67,41 @@ type DenyAccessByIPModel struct {
 	IPList []string `json:"ip_list"`
 }
 
+type AllowAccessOnlyFromIPModel struct {
+	IPList []string `json:"ip_list"`
+}
+
 type BehaviorAction struct {
-	Id                        string                 `json:"id,omitempty"`
-	Type                      ActionType             `json:"type"`
-	MaxTTL                    int                    `json:"max_ttl,omitempty"`
-	ResponseHeaderName        string                 `json:"response_header_name,omitempty"`
-	ResponseHeaderValue       string                 `json:"response_header_value,omitempty"`
-	RequestHeaderName         string                 `json:"request_header_name,omitempty"`
-	RequestHeaderValue        string                 `json:"request_header_value,omitempty"`
-	CacheBehaviorValue        string                 `json:"cache_behavior_value,omitempty"`
-	RedirectURL               string                 `json:"redirect_url,omitempty"`
-	OriginCacheControlEnabled bool                   `json:"origin_cache_control_enabled,omitempty"`
-	Pattern                   string                 `json:"pattern,omitempty"`
-	Cookie                    string                 `json:"cookie,omitempty"`
-	AutoMinify                string                 `json:"auto_minify,omitempty"`
-	HostHeader                string                 `json:"host_header,omitempty"`
-	UseOriginHost             *bool                  `json:"use_domain_origin,omitempty"`
-	Origin                    string                 `json:"origin,omitempty"`
-	Enabled                   *bool                  `json:"enabled,omitempty"`
-	CacheKey                  string                 `json:"cache_key,omitempty"`
-	ClientHeaderName          string                 `json:"client_header_name,omitempty"`
-	ActionDisabled            bool                   `json:"action_disabled,omitempty"`
-	StatusCode                int                    `json:"status_code,omitempty"`
-	UnifiedLogDestination     string                 `json:"unified_log_destination,omitempty"`
-	UnifiedLogSamplingRate    int                    `json:"unified_log_sampling_rate,omitempty"`
-	AllowedMethods            string                 `json:"allowed_methods,omitempty"`
-	ResponsePagePath          string                 `json:"response_page_path,omitempty"`
-	CachedMethods             string                 `json:"cached_methods,omitempty"`
-	DenyAccessByTime          *DenyAccessByTimeModel `json:"deny_access_by_time,omitempty"`
-	DenyAccessByIP            *DenyAccessByIPModel   `json:"deny_access_by_ip,omitempty"`
-	ViewerProtocol            string                 `json:"viewer_protocol,omitempty"`
+	Id                        string                      `json:"id,omitempty"`
+	Type                      ActionType                  `json:"type"`
+	MaxTTL                    int                         `json:"max_ttl,omitempty"`
+	ResponseHeaderName        string                      `json:"response_header_name,omitempty"`
+	ResponseHeaderValue       string                      `json:"response_header_value,omitempty"`
+	RequestHeaderName         string                      `json:"request_header_name,omitempty"`
+	RequestHeaderValue        string                      `json:"request_header_value,omitempty"`
+	CacheBehaviorValue        string                      `json:"cache_behavior_value,omitempty"`
+	RedirectURL               string                      `json:"redirect_url,omitempty"`
+	OriginCacheControlEnabled bool                        `json:"origin_cache_control_enabled,omitempty"`
+	Pattern                   string                      `json:"pattern,omitempty"`
+	Cookie                    string                      `json:"cookie,omitempty"`
+	AutoMinify                string                      `json:"auto_minify,omitempty"`
+	HostHeader                string                      `json:"host_header,omitempty"`
+	UseOriginHost             *bool                       `json:"use_domain_origin,omitempty"`
+	Origin                    string                      `json:"origin,omitempty"`
+	Enabled                   *bool                       `json:"enabled,omitempty"`
+	CacheKey                  string                      `json:"cache_key,omitempty"`
+	ClientHeaderName          string                      `json:"client_header_name,omitempty"`
+	ActionDisabled            bool                        `json:"action_disabled,omitempty"`
+	StatusCode                int                         `json:"status_code,omitempty"`
+	UnifiedLogDestination     string                      `json:"unified_log_destination,omitempty"`
+	UnifiedLogSamplingRate    int                         `json:"unified_log_sampling_rate,omitempty"`
+	AllowedMethods            string                      `json:"allowed_methods,omitempty"`
+	ResponsePagePath          string                      `json:"response_page_path,omitempty"`
+	CachedMethods             string                      `json:"cached_methods,omitempty"`
+	DenyAccessByTime          *DenyAccessByTimeModel      `json:"deny_access_by_time,omitempty"`
+	DenyAccessByIP            *DenyAccessByIPModel        `json:"deny_access_by_ip,omitempty"`
+	ViewerProtocol            string                      `json:"viewer_protocol,omitempty"`
+	AllowAccessOnlyFromIP     *AllowAccessOnlyFromIPModel `json:"allow_access_only_from_ip,omitempty"`
 }
 
 type Behavior struct {
