@@ -30,6 +30,7 @@ type Origin struct {
 	S3AwsSecret     string                 `json:"s3_aws_secret,omitempty"`
 	TimeoutMs       int                    `json:"timeout_ms,omitempty"`
 	VerifyTLS       bool                   `json:"verify_tls,omitempty"`
+	SNIHostname     string                 `json:"sni_hostname,omitempty"`
 	ShieldLocation  *OriginShieldLocation  `json:"shield_location,omitempty"`
 	ShieldProviders []OriginShieldProvider `json:"shield_providers,omitempty"`
 }
