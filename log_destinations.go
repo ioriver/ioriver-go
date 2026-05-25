@@ -15,7 +15,7 @@ const (
 type LogDestination struct {
 	Id          string          `json:"id,omitempty"`
 	Service     string          `json:"service"`
-	Credentials interface{}     `json:"credentials,omitempty"`
+	Credentials string          `json:"credentials,omitempty"`
 	Name        string          `json:"name"`
 	Type        DestinationType `json:"type"`
 	S3Bucket    string          `json:"s3_bucket,omitempty"`
