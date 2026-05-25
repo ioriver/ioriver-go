@@ -229,7 +229,7 @@ func Create[T interface{}, NewT interface{}](client *IORiverClient, path string,
 	return &result, nil
 }
 
-func Update[T interface{}](client *IORiverClient, path string, obj T) (*T, error) {
+func Update[T interface{}, NewT interface{}](client *IORiverClient, path string, obj NewT) (*T, error) {
 	resp, err := client.CallApi(path, "PUT", CallParams{payload: obj})
 	if err != nil {
 		return nil, err

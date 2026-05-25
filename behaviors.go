@@ -142,6 +142,6 @@ func (client *IORiverClient) DeleteBehavior(serviceId string, behaviorId string)
 
 func (client *IORiverClient) ResetDefaultBehavior(serviceId string) error {
 	path := fmt.Sprintf("%s%s/", fmt.Sprintf(behaviorsBasePath, serviceId), "reset_default_behavior")
-	_, err := Update(client, path, Behavior{})
+	_, err := Update[Behavior, Behavior](client, path, Behavior{})
 	return err
 }

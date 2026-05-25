@@ -27,12 +27,38 @@ func (client *IORiverClient) CreateService(newService Service) (*Service, error)
 	return Create[Service](client, servicesBasePath, newService)
 }
 
+func (client *IORiverClient) CreateServiceWithConfig(newService Service, serviceConfig ServiceConfig) (*Service, error) {
+	path := servicesBasePath + "create_from_service_config/"
+	req := ServiceCreateFromConfigRequest{
+		Description:   newService.Description,
+		CertificateID: newService.Certificate,
+		ServiceConfig: serviceConfig.ConfigJSON,
+	}
+
+	resp, err := Create[ServiceCreateFromConfigResponse](client, path, req)
+	if err != nil {
+		return nil, err
+	}
+
+	service := Service{
+		Id:          resp.ID,
+		Account:     resp.Account,
+		Name:        resp.Name,
+		Description: resp.Description,
+		Certificate: resp.Certificate,
+		ServiceUid:  resp.ServiceUid,
+		Cname:       resp.Cname,
+	}
+
+	return &service, nil
+}
+
 func (client *IORiverClient) UpdateService(service Service) (*Service, error) {
 	path := servicesBasePath + service.Id + "/"
 	return Update[Service](client, path, service)
 }
 
-func (client *IORiverClient) DeleteService(serviceId string) error {
-	path := fmt.Sprintf("%s%s/", servicesBasePath, serviceId)
+func (client *IORiverClient) DeleteService(id string) error {
+	path := fmt.Sprintf("%s%s/", servicesBasePath, id)
 	return Delete(client, path)
 }
