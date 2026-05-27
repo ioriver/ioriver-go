@@ -80,24 +80,26 @@ type Traffic struct {
 const trafficBasePath = "traffic/overtime/"
 
 func (client *IORiverClient) GetTraffic(serviceId string, startTime int64, endTime int64, granularity Granularity) (*Traffic, error) {
-	startTimeParam, endTimeParam, granularityParam := getQueryParams(startTime, endTime, granularity)
+	startTimeParam, endTimeParam, granularityParam, completedTrafficParam := getQueryParams(startTime, endTime, granularity)
 	path := fmt.Sprintf("%s%s/", trafficBasePath, serviceId)
-	return Get[Traffic](client, path, startTimeParam, endTimeParam, granularityParam)
+	return Get[Traffic](client, path, startTimeParam, endTimeParam, granularityParam, completedTrafficParam)
 }
 
 func (client *IORiverClient) GetAdvancedTraffic(
 	serviceId string, startTime int64, endTime int64, granularity Granularity, advancedMetric AdvancedMetric) (*Traffic, error) {
 	path := fmt.Sprintf("%s%s/", trafficBasePath, serviceId)
-	startTimeParam, endTimeParam, granularityParam := getQueryParams(startTime, endTime, granularity)
+	startTimeParam, endTimeParam, granularityParam, completedTrafficParam := getQueryParams(startTime, endTime, granularity)
 	advancedMetricParams := fmt.Sprintf("advancedMetricName=%s", advancedMetric)
-	return Get[Traffic](client, path, startTimeParam, endTimeParam, granularityParam, advancedMetricParams)
+	return Get[Traffic](client, path,
+		startTimeParam, endTimeParam, granularityParam, advancedMetricParams, completedTrafficParam)
 }
 
-func getQueryParams(startTime int64, endTime int64, granularity Granularity) (string, string, string) {
+func getQueryParams(startTime int64, endTime int64, granularity Granularity) (string, string, string, string) {
 	startTimeParam := fmt.Sprintf("startTime=%d", startTime)
 	endTimeParam := fmt.Sprintf("endTime=%d", endTime)
 	granularityParam := fmt.Sprintf("granularity=%s", granularity)
-	return startTimeParam, endTimeParam, granularityParam
+	completedTrafficParam := "exporter=true"
+	return startTimeParam, endTimeParam, granularityParam, completedTrafficParam
 }
 
 func (t *Traffic) GetFilteredMetrics(serviceId string, predicate func(metric *Metric, timestamp int64) bool) []Metric {
