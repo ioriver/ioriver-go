@@ -12,9 +12,10 @@ type ServiceConfig struct {
 }
 
 type ServiceCreateFromConfigRequest struct {
-	Description   string                 `json:"description"`
-	CertificateID string                 `json:"certificate_id"`
-	ServiceConfig map[string]interface{} `json:"service_config"`
+	Description    string                 `json:"description"`
+	CertificateID  string                 `json:"certificate_id,omitempty"`
+	CertificateIDs []string               `json:"certificate_ids,omitempty"`
+	ServiceConfig  map[string]interface{} `json:"service_config"`
 }
 
 type ServiceCreateFromConfigResponse struct {

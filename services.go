@@ -3,13 +3,14 @@ package ioriver
 import "fmt"
 
 type Service struct {
-	Id          string `json:"id,omitempty"`
-	Account     string `json:"account,omitempty"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Certificate string `json:"certificate"`
-	ServiceUid  string `json:"service_uid,omitempty"`
-	Cname       string `json:"cname,omitempty"`
+	Id           string   `json:"id,omitempty"`
+	Account      string   `json:"account,omitempty"`
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	Certificate  string   `json:"certificate,omitempty"`
+	Certificates []string `json:"certificates,omitempty"`
+	ServiceUid   string   `json:"service_uid,omitempty"`
+	Cname        string   `json:"cname,omitempty"`
 }
 
 const servicesBasePath = "services/"
@@ -30,9 +31,10 @@ func (client *IORiverClient) CreateService(newService Service) (*Service, error)
 func (client *IORiverClient) CreateServiceWithConfig(newService Service, serviceConfig ServiceConfig) (*Service, error) {
 	path := servicesBasePath + "create_from_service_config/"
 	req := ServiceCreateFromConfigRequest{
-		Description:   newService.Description,
-		CertificateID: newService.Certificate,
-		ServiceConfig: serviceConfig.ConfigJSON,
+		Description:    newService.Description,
+		ServiceConfig:  serviceConfig.ConfigJSON,
+		CertificateID:  newService.Certificate,
+		CertificateIDs: newService.Certificates,
 	}
 
 	resp, err := Create[ServiceCreateFromConfigResponse](client, path, req)
@@ -41,13 +43,14 @@ func (client *IORiverClient) CreateServiceWithConfig(newService Service, service
 	}
 
 	service := Service{
-		Id:          resp.ID,
-		Account:     resp.Account,
-		Name:        resp.Name,
-		Description: resp.Description,
-		Certificate: resp.Certificate,
-		ServiceUid:  resp.ServiceUid,
-		Cname:       resp.Cname,
+		Id:           resp.ID,
+		Account:      resp.Account,
+		Name:         resp.Name,
+		Description:  resp.Description,
+		Certificate:  resp.Certificate,
+		Certificates: resp.Certificates,
+		ServiceUid:   resp.ServiceUid,
+		Cname:        resp.Cname,
 	}
 
 	return &service, nil
