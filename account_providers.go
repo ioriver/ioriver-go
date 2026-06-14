@@ -11,6 +11,7 @@ const (
 	Akamai      int = 5
 	Fastly      int = 13
 	Edgio       int = 15
+	CDNetworks  int = 16
 	GCPCloudCDN int = 17
 	GCPMediaCDN int = 18
 )
@@ -61,6 +62,12 @@ type AkamaiCredentials struct {
 	ClientSecret string `json:"client_secret"`
 	AccessSecret string `json:"access_secret"`
 	BaseUrl      string `json:"base_url"`
+}
+
+type CDNetworksCredentials struct {
+	AccessKey  string `json:"access_key"`
+	SecretKey  string `json:"secret_key"`
+	ContractId string `json:"contract_id"`
 }
 
 const acBasePath = "account-providers/"
