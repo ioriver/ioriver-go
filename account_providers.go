@@ -10,7 +10,6 @@ const (
 	AzureCDN    int = 4
 	Akamai      int = 5
 	Fastly      int = 13
-	Edgio       int = 15
 	CDNetworks  int = 16
 	GCPCloudCDN int = 17
 	GCPMediaCDN int = 18
@@ -49,12 +48,6 @@ type AzureCdnCredentials struct {
 	TenantId          string `json:"tenantId"`
 	ClientSecret      string `json:"clientSecret"`
 	ResourceGroupName string `json:"resourceGroupName"`
-}
-
-type EdgioCredentials struct {
-	ClientId       string `json:"client_id"`
-	ClientSecret   string `json:"client_secret"`
-	OrganizationId string `json:"organization_id"`
 }
 
 type AkamaiCredentials struct {

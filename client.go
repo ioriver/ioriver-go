@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -107,12 +108,11 @@ func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 
 func (client *IORiverClient) waitForBackgrounTask(id int, requestId string) error {
 
-	TIMEOUT := 300
 	elassped := 0
 	var task *AsyncTask = nil
 	var err error = nil
 
-	for elassped < TIMEOUT {
+	for elassped < defaultAsyncTaskTimeout {
 		task, err = client.getAsyncTask(id)
 		if err != nil {
 			fmt.Printf("Error getting async-tasks: %s\n", err)
@@ -128,8 +128,15 @@ func (client *IORiverClient) waitForBackgrounTask(id int, requestId string) erro
 		elassped += 1
 	}
 
-	if task != nil && task.Status == "Status.ERROR" {
-		err = fmt.Errorf("request failed: %s, request-id: %s, details: %s", task.Message, requestId, task.Details)
+	if task != nil {
+		switch task.Status {
+		case "Status.ERROR":
+			err = fmt.Errorf("request failed: %s, request-id: %s, details: %s", task.Message, requestId, task.Details)
+		case "Status.COMPLETED":
+			err = nil
+		default:
+			err = fmt.Errorf("request did not complete within timeout, current status: %s, request-id: %s", task.Status, requestId)
+		}
 	}
 
 	return err
@@ -175,6 +182,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "[IORIVER API CALL] %s %s -> ERROR: %s\n", method, url, err)
 		return resp, err
 	}
 
@@ -182,6 +190,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 	if requestId == "" {
 		requestId = "unknown"
 	}
+	fmt.Fprintf(os.Stderr, "[IORIVER API CALL RESP] %s %s -> %s (req-id: %s)\n", method, url, resp.Status, requestId)
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		respBody, err := io.ReadAll(resp.Body)
