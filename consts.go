@@ -1,8 +1,9 @@
 package ioriver
 
 const (
-	defaultScheme   = "https"
-	defaultHostname = "manage.ioriver.io"
-	defaultBasePath = "/api/"
-	userAgent       = "ioriver-go"
+	defaultScheme           = "https"
+	defaultHostname         = "manage.ioriver.io"
+	defaultBasePath         = "/api/"
+	userAgent               = "ioriver-go"
+	defaultAsyncTaskTimeout = 3600
 )
