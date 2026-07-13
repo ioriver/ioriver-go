@@ -1,6 +1,8 @@
 package ioriver
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Granularity int
 
@@ -77,6 +79,11 @@ type Traffic struct {
 	Error        string         `json:"error"`
 }
 
+type TrafficOvertimeRequest struct {
+	ServiceIds          []string `json:"serviceIds"`
+	AdvancedMetricNames []string `json:"advancedMetricNames"`
+}
+
 const trafficBasePath = "traffic/overtime/"
 
 func (client *IORiverClient) GetTraffic(serviceId string, startTime int64, endTime int64, granularity Granularity) (*Traffic, error) {
@@ -92,6 +99,23 @@ func (client *IORiverClient) GetAdvancedTraffic(
 	advancedMetricParams := fmt.Sprintf("advancedMetricName=%s", advancedMetric)
 	return Get[Traffic](client, path,
 		startTimeParam, endTimeParam, granularityParam, advancedMetricParams, completedTrafficParam)
+}
+
+func (client *IORiverClient) RetrieveTrafficOvertime(
+	serviceIds []string, startTime int64, endTime int64, granularity Granularity, advancedMetrics []AdvancedMetric) (*Traffic, error) {
+	startTimeParam, endTimeParam, granularityParam, _ := getQueryParams(startTime, endTime, granularity)
+
+	advancedMetricNames := make([]string, 0, len(advancedMetrics))
+	for _, advancedMetric := range advancedMetrics {
+		advancedMetricNames = append(advancedMetricNames, advancedMetric.String())
+	}
+
+	payload := TrafficOvertimeRequest{
+		ServiceIds:          serviceIds,
+		AdvancedMetricNames: advancedMetricNames,
+	}
+
+	return Create[Traffic](client, trafficBasePath, payload, startTimeParam, endTimeParam, granularityParam)
 }
 
 func getQueryParams(startTime int64, endTime int64, granularity Granularity) (string, string, string, string) {
