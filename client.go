@@ -218,8 +218,8 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 	return resp, err
 }
 
-func Create[T interface{}, NewT interface{}](client *IORiverClient, path string, obj NewT) (*T, error) {
-	resp, err := client.CallApi(path, "POST", CallParams{payload: obj})
+func Create[T interface{}, NewT interface{}](client *IORiverClient, path string, obj NewT, queryParams ...string) (*T, error) {
+	resp, err := client.CallApi(path, "POST", CallParams{payload: obj, query: strings.Join(queryParams, "&")})
 	if err != nil {
 		return nil, err
 	}
