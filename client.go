@@ -25,6 +25,22 @@ type CallParams struct {
 	query   string
 }
 
+type APIError struct {
+	StatusCode int
+	Status     string
+	RequestID  string
+	Details    string
+}
+
+func (e *APIError) Error() string {
+	requestID := e.RequestID
+	if requestID == "" {
+		requestID = "unknown"
+	}
+
+	return fmt.Sprintf("request failed: %s, request-id: %s, details: %s", e.Status, requestID, e.Details)
+}
+
 func NewClient(token string) *IORiverClient {
 	c := &IORiverClient{
 		Token:       token,
@@ -45,9 +61,13 @@ type AsyncTask struct {
 	Title    string `json:"title,omitempty"`
 }
 
+func normalizeAsyncTaskStatus(status string) string {
+	return strings.TrimPrefix(status, "Status.")
+}
+
 func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 
-	url := client.EndpointUrl + "v1/async_tasks/"
+	url := client.EndpointUrl + "v1/async_task_by_id/" + strconv.Itoa(id) + "/"
 	httpClient := http.DefaultClient
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -67,72 +87,80 @@ func (client *IORiverClient) getAsyncTask(id int) (*AsyncTask, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
+	// Not found task treated as success
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, nil
+	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		respBody, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
 		errDetails := ""
 		if err == nil {
 			errDetails = string(respBody)
 		}
 
 		requestId := resp.Header.Get("x-request-id")
-		if requestId == "" {
-			requestId = "unknown"
-		}
-
-		respErr := fmt.Errorf("request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
+		respErr := &APIError{StatusCode: resp.StatusCode, Status: resp.Status, RequestID: requestId, Details: errDetails}
 		return nil, respErr
 	}
 
-	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
-	var tasks []AsyncTask
-	err = json.Unmarshal(respBody, &tasks)
+	var task AsyncTask
+	err = json.Unmarshal(respBody, &task)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling async-tasks json: %w", err)
 	}
 
-	for _, task := range tasks {
-		if task.Id == id {
-			return &task, nil
-		}
+	if task.Id == id {
+		return &task, nil
 	}
-
 	return nil, nil
 }
 
-func (client *IORiverClient) waitForBackgrounTask(id int, requestId string) error {
-
-	elassped := 0
+func (client *IORiverClient) waitForBackgroundTask(id int, requestId string) error {
+	waits := []int{1, 2, 4, 8, 10}
+	pollIndex := 0
+	elapsed := 0
 	var task *AsyncTask = nil
 	var err error = nil
 
-	for elassped < defaultAsyncTaskTimeout {
+	for elapsed < defaultAsyncTaskTimeout {
 		task, err = client.getAsyncTask(id)
 		if err != nil {
-			fmt.Printf("Error getting async-tasks: %s\n", err)
+			break
 		}
 
-		if err == nil && task != nil {
-			if task.Status == "Status.COMPLETED" || task.Status == "Status.ERROR" {
-				break
-			}
+		if task == nil {
+			fmt.Fprintf(os.Stderr, "Async task with id %d not found. \n", id)
+			err = fmt.Errorf("async task not found: id=%d, request-id=%s", id, requestId)
+			break
 		}
 
-		time.Sleep(1 * time.Second)
-		elassped += 1
+		status := normalizeAsyncTaskStatus(task.Status)
+		if status == "COMPLETED" || status == "ERROR" {
+			break
+		}
+
+		sleepFor := waits[pollIndex]
+		time.Sleep(time.Duration(sleepFor) * time.Second)
+		elapsed += sleepFor
+
+		if pollIndex < len(waits)-1 {
+			pollIndex += 1
+		}
 	}
 
 	if task != nil {
-		switch task.Status {
-		case "Status.ERROR":
-			err = fmt.Errorf("request failed: %s, request-id: %s, details: %s", task.Message, requestId, task.Details)
-		case "Status.COMPLETED":
+		switch normalizeAsyncTaskStatus(task.Status) {
+		case "ERROR":
+			err = &APIError{StatusCode: 0, Status: task.Message, RequestID: requestId, Details: task.Details}
+		case "COMPLETED":
 			err = nil
 		default:
 			err = fmt.Errorf("request did not complete within timeout, current status: %s, request-id: %s", task.Status, requestId)
@@ -162,6 +190,8 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 	if params.query != "" {
 		url += "?" + params.query
 	}
+
+	fmt.Fprintf(os.Stderr, "[IORIVER API CALL REQ] %s %s\n", method, url)
 
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
@@ -200,7 +230,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 			errDetails = string(respBody)
 		}
 
-		respErr := fmt.Errorf("request failed: %s, request-id: %s, details: %s", resp.Status, requestId, errDetails)
+		respErr := &APIError{StatusCode: resp.StatusCode, Status: resp.Status, RequestID: requestId, Details: errDetails}
 		return nil, respErr
 	}
 
@@ -208,7 +238,7 @@ func (client *IORiverClient) CallApi(path string, method string, params CallPara
 	if backgroundTask != "" {
 		id, err := strconv.Atoi(backgroundTask)
 		if err == nil {
-			err = client.waitForBackgrounTask(id, requestId)
+			err = client.waitForBackgroundTask(id, requestId)
 			if err != nil {
 				return nil, err
 			}
