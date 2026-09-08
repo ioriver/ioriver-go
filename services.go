@@ -13,6 +13,13 @@ type Service struct {
 	Cname        string   `json:"cname,omitempty"`
 }
 
+type ServiceConfigAttachedFile struct {
+	ID       string `json:"id,omitempty"`
+	Service  string `json:"service,omitempty"`
+	FileType string `json:"file_type"`
+	Contents string `json:"contents,omitempty"`
+}
+
 const servicesBasePath = "services/"
 
 func (client *IORiverClient) GetService(id string) (*Service, error) {
@@ -26,6 +33,16 @@ func (client *IORiverClient) ListServices() ([]Service, error) {
 
 func (client *IORiverClient) CreateService(newService Service) (*Service, error) {
 	return Create[Service](client, servicesBasePath, newService)
+}
+
+func (client *IORiverClient) CreateServiceAttachedFile(serviceID, fileType, contents string) (*ServiceConfigAttachedFile, error) {
+	path := fmt.Sprintf("services/%s/attached_files/", serviceID)
+	payload := ServiceConfigAttachedFile{
+		Service:  serviceID,
+		FileType: fileType,
+		Contents: contents,
+	}
+	return Create[ServiceConfigAttachedFile](client, path, payload)
 }
 
 func (client *IORiverClient) CreateServiceWithConfig(newService Service, serviceConfig ServiceConfig) (*Service, error) {
