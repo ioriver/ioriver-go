@@ -1,6 +1,9 @@
 package ioriver
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
 type Service struct {
 	Id           string   `json:"id,omitempty"`
@@ -20,6 +23,16 @@ type ServiceConfigAttachedFile struct {
 	Contents string `json:"contents,omitempty"`
 }
 
+type ServiceTagResult struct {
+	TagName string `json:"tag_name"`
+	Created bool   `json:"created"`
+}
+
+type ServiceTagRemoval struct {
+	TagName string `json:"tag_name"`
+	Removed bool   `json:"removed"`
+}
+
 const servicesBasePath = "services/"
 
 func (client *IORiverClient) GetService(id string) (*Service, error) {
@@ -29,6 +42,38 @@ func (client *IORiverClient) GetService(id string) (*Service, error) {
 
 func (client *IORiverClient) ListServices() ([]Service, error) {
 	return List[Service](client, servicesBasePath)
+}
+
+func (client *IORiverClient) ListServicesByTagId(tagId string) ([]Service, error) {
+	query := url.Values{"tags": {tagId}}
+	return ListWithQuery[Service](client, servicesBasePath, query.Encode())
+}
+
+// AddServiceTags attaches tags by name, creating missing tags with the backend's default color.
+func (client *IORiverClient) AddServiceTags(serviceId string, names []string) ([]ServiceTagResult, error) {
+	type serviceTag struct {
+		Name string `json:"name"`
+	}
+	payload := struct {
+		Tags []serviceTag `json:"tags"`
+	}{Tags: make([]serviceTag, len(names))}
+	for i, name := range names {
+		payload.Tags[i] = serviceTag{Name: name}
+	}
+	path := fmt.Sprintf("%s%s/add_tags/", servicesBasePath, serviceId)
+	result, err := Create[[]ServiceTagResult](client, path, payload)
+	if err != nil {
+		return nil, err
+	}
+	return *result, nil
+}
+
+func (client *IORiverClient) RemoveServiceTag(serviceId, name string) (*ServiceTagRemoval, error) {
+	payload := struct {
+		TagName string `json:"tag_name"`
+	}{TagName: name}
+	path := fmt.Sprintf("%s%s/remove_tag/", servicesBasePath, serviceId)
+	return Create[ServiceTagRemoval](client, path, payload)
 }
 
 func (client *IORiverClient) CreateService(newService Service) (*Service, error) {

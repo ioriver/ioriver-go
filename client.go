@@ -321,8 +321,11 @@ func Get[T interface{}](client *IORiverClient, path string, queryParams ...strin
 }
 
 func List[T interface{}](client *IORiverClient, path string) ([]T, error) {
+	return ListWithQuery[T](client, path)
+}
 
-	resp, err := client.CallApi(path, "GET", CallParams{payload: nil})
+func ListWithQuery[T interface{}](client *IORiverClient, path string, queryParams ...string) ([]T, error) {
+	resp, err := client.CallApi(path, "GET", CallParams{payload: nil, query: strings.Join(queryParams, "&")})
 	if err != nil {
 		return nil, err
 	}
